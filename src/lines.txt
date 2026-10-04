@@ -1,0 +1,32 @@
+title|The Bee Game! Starring Alexander Buzzson!|ryan
+go|Let's buzz, Alex!|ryan
+l1|Level one. Meadow Brook Elementary!|amy
+l2|Level two. Rochester Hills!|amy
+l3|Level three. Detroit!|amy
+l4|Level four. Mackinac Island!|amy
+l5|Level five. Tahquamenon Falls!|amy
+b1|Uh oh! It's Mister Swatter! Dodge the big swat!|ryan
+b2|Pee-yew! It's Stinky the Skunk! Watch out for stink clouds!|ryan
+b3|Beep boop! It's Robo-Hornet three thousand!|ryan
+b4|Squawk! It's the Seagull Gang!|ryan
+b5|It's KING BEAR! He wants all the honey!|ryan
+w1|You beat Mister Swatter!|amy
+w2|Stinky smells a flower now. Hooray!|amy
+w3|Robo-Hornet is our friend now!|amy
+w4|The seagulls flew away with fries!|amy
+w5|King Bear is happy! You saved the hive!|amy
+g1|Great shot, Alex!|ryan
+g2|Buzz buzz! Nice flying!|amy
+g3|Awesome dodge, Alex!|ryan
+g4|Alex, you're a super bee!|amy
+g5|Bee-autiful!|amy
+honey|Sweet honey!|amy
+triple|Triple stinger!|ryan
+shield|Flower shield!|amy
+heart|Extra heart!|amy
+check|Checkpoint!|amy
+oops|Oopsie! Let's try again from the checkpoint!|amy
+ouch|Ouch! Be careful, Alex!|amy
+clear|Level clear! Great job, Alex!|amy
+saved|Alexander Buzzson saved the hive!|ryan
+half|Keep going! Halfway there!|amy
