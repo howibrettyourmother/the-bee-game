@@ -30,3 +30,12 @@ ouch|Ouch! Be careful, Alex!|amy
 clear|Level clear! Great job, Alex!|amy
 saved|Alexander Buzzson saved the hive!|ryan
 half|Keep going! Halfway there!|amy
+pick_a|Alexander Buzzson!|ryan
+pick_z|Zoe Buzzson!|amy
+go_z|Let's buzz, Zoe!|amy
+g1_z|Great shot, Zoe!|amy
+g3_z|Awesome dodge, Zoe!|amy
+g4_z|Zoe, you're a super bee!|amy
+ouch_z|Ouch! Be careful, Zoe!|amy
+clear_z|Level clear! Great job, Zoe!|amy
+saved_z|Zoe Buzzson saved the hive!|amy

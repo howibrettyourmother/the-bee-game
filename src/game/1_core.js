@@ -9,8 +9,8 @@ const QUALS=[1,0.8,0.66];let qualI=0;
 const insEl=document.createElement('div');insEl.style.cssText='position:fixed;left:0;top:0;width:0;height:0;padding:env(safe-area-inset-top) env(safe-area-inset-right) env(safe-area-inset-bottom) env(safe-area-inset-left);visibility:hidden;pointer-events:none';document.body.appendChild(insEl);
 function resize(){SW=innerWidth;SH=innerHeight;
   // older iPhones: cap the backing store at 2x and let the adaptive quality step drop it further if frames get slow
-  DPR=Math.min(devicePixelRatio||1,2)*QUAL;
-  SC=Math.min(SW/400,SH/560);W=SW/SC;H=SH/SC;RS=SC*DPR;
+  DPR=Math.min(devicePixelRatio||1,Math.min(SW,SH)>=700?1.5:2)*QUAL; // iPad (A10): 1.5x backing store keeps big-screen fill rate smooth
+  SC=Math.min(SW/400,SH/(SW>SH&&SH>=700?520:560));W=SW/SC; /* iPad landscape: ~10% bigger art/buttons */H=SH/SC;RS=SC*DPR;
   const cs=getComputedStyle(insEl);let t=parseFloat(cs.paddingTop)||0,b=parseFloat(cs.paddingBottom)||0;
   if(SAFE_DBG){t=+SAFE_DBG[1];b=+SAFE_DBG[2]}
   TOP=t/SC;BOT=b/SC;INL=(parseFloat(cs.paddingLeft)||0)/SC;INR=(parseFloat(cs.paddingRight)||0)/SC;
@@ -26,6 +26,8 @@ const YMAX=()=>GY()-18;
 const BX=()=>Math.min(W*0.22,150)+INL;          // bee x
 // ---------- persistence ----------
 const LS={get:(k,d)=>{try{const v=localStorage.getItem('tbg_'+k);return v==null?d:v}catch(e){return d}},set:(k,v)=>{try{localStorage.setItem('tbg_'+k,v)}catch(e){}}};
+let HERO=LS.get('hero','alex')==='zoe'?'zoe':'alex';window.HERO_Z=HERO==='zoe';
+function setHero(h){HERO=h;window.HERO_Z=h==='zoe';LS.set('hero',h)}
 let unlockLv=clamp(+LS.get('unlock',1)||1,1,5),best=+LS.get('best',0)||0,autoFire=LS.get('auto','1')!=='0',selLv=unlockLv-1;
 // ---------- drawing helpers ----------
 function txt(s,x,y,size,fill,o){o=o||{};X.font=(o.wt||'800 ')+size+'px '+FONT;X.textAlign=o.a||'center';X.textBaseline='middle';

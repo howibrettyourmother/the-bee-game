@@ -64,7 +64,7 @@ const AUD=(()=>{
   };
   // ---------- one voice at a time, with ducking ----------
   let curEnd=0,curPrio=0,queue=[];
-  function say(k,prio,fromQ){prio=prio||1;if(!ok())return false;const b=clips[k];if(!b)return false;const t=now();
+  function say(k,prio,fromQ){prio=prio||1;if(!ok())return false;if(window.HERO_Z&&clips[k+'_z'])k=k+'_z';const b=clips[k];if(!b)return false;const t=now();
     if(t<curEnd||queue.length&&!fromQ){if(prio>=2&&!queue.some(q=>q.k===k)){if(queue.length>=2){const lo=queue.reduce((a,q,i)=>q.prio<queue[a].prio?i:a,0);if(queue[lo].prio<=prio&&prio<3)queue.splice(lo,1);else if(prio>=3&&queue.length<3){}else{stats.dropped++;return false}}queue.push({k,prio});queue.sort((a,b)=>b.prio-a.prio);return true}stats.dropped++;return false}
     const s=C.createBufferSource();s.buffer=b;s.connect(voiceBus);s.start(t+0.02);curEnd=t+0.02+b.duration+0.2;curPrio=prio;stats.voice++;stats.last=k;stats.said.push(k);
     musicDuck.gain.cancelScheduledValues(t);musicDuck.gain.setTargetAtTime(0.28,t,0.04);musicDuck.gain.setTargetAtTime(1,curEnd,0.2);

@@ -1,7 +1,7 @@
 // ================= characters & things (cached sprites where possible) =================
 const OUT='#3b2a14';
 function beeBody(o){// Alexander Buzzson facing right, drawn around (0,0)
-  o=o||{};const body=o.body||'#ffd23f',str=o.stripe||'#2b2118';
+  o=o||{};const body=o.body||'#ffd23f',str=o.stripe||(o.zoe?'#4a2350':'#2b2118');
   // stinger
   poly([-22,-4,-36,1,-22,6],'#3b2a14');
   X.save();X.beginPath();X.ellipse(-2,2,23,18,0,0,TAU);X.fillStyle=body;X.fill();X.clip();X.fillStyle=str;X.fillRect(-13,-20,7,44);X.fillRect(1,-20,7,44);X.restore();
@@ -13,13 +13,17 @@ function beeBody(o){// Alexander Buzzson facing right, drawn around (0,0)
   // antennae
   X.beginPath();X.moveTo(16,-18);X.quadraticCurveTo(12,-30,6,-31);strokeC(OUT,2);circ(6,-31,3,str);
   X.beginPath();X.moveTo(23,-19);X.quadraticCurveTo(26,-32,32,-33);strokeC(OUT,2);circ(32,-33,3,str);
+  if(o.zoe){// Zoe Buzzson: pink bow, lashes, rosy cheeks
+    ell(19,1,5,3.2,'rgba(255,105,150,0.75)');X.beginPath();X.moveTo(29,-14);X.lineTo(32,-17);X.moveTo(27,-15.5);X.lineTo(28.5,-19);strokeC(OUT,1.6);
+    X.save();X.translate(13,-19);X.rotate(-0.35);poly([0,0,-10,-7,-10,7],'#ff4f9a');poly([0,0,10,-7,10,7],'#ff4f9a');X.beginPath();X.moveTo(0,0);X.lineTo(-10,-7);X.lineTo(-10,7);X.closePath();X.moveTo(0,0);X.lineTo(10,-7);X.lineTo(10,7);X.closePath();strokeC(OUT,1.8);circ(0,0,3.6,'#c2185b');X.restore();
+    circ(-8,8,3,'#f8bbd0');circ(4,10,3,'#e1bee7');}
   // little red cap with an "A"
-  if(o.cap!==false){X.beginPath();X.arc(19,-13,12,Math.PI*1.02,Math.PI*1.98);X.closePath();X.fillStyle='#e53935';X.fill();X.fillStyle='#e53935';X.fillRect(19,-15,16,4);circ(18,-18,4.6,'#fff');txt('A',18,-17.6,7,'#e53935')}
+  else if(o.cap!==false){X.beginPath();X.arc(19,-13,12,Math.PI*1.02,Math.PI*1.98);X.closePath();X.fillStyle='#e53935';X.fill();X.fillStyle='#e53935';X.fillRect(19,-15,16,4);circ(18,-18,4.6,'#fff');txt('A',18,-17.6,7,'#e53935')}
   // legs
   X.beginPath();X.moveTo(-6,19);X.lineTo(-9,26);X.moveTo(4,19);X.lineTo(3,26);strokeC(OUT,2.2)}
 function wings(x,y,t,s,c){s=s||1;const f=Math.abs(Math.sin(t*38));X.globalAlpha=0.75;ell(x-4*s,y-18*s,9*s,(14-6*f)*s,c||'#e6f6ff',-0.5);ell(x+6*s,y-20*s,8*s,(12-5*f)*s,c||'#d7f0ff',0.35);X.globalAlpha=1}
-function drawBee(x,y,o){o=o||{};const s=o.s||1;const B=spr('bee'+(o.key||''),84,74,()=>beeBody(o));
-  X.save();X.translate(x,y);X.rotate(o.rot||0);X.scale(s,s);wings(0,0,T,1);blit(B,0,0);X.restore()}
+function drawBee(x,y,o){o=o||{};const s=o.s||1;const z=o.who?o.who==='zoe':HERO==='zoe';o.zoe=z;const B=spr('bee'+(z?'Z':'')+(o.key||''),84,74,()=>beeBody(o));
+  X.save();X.translate(x,y);X.rotate(o.rot||0);X.scale(s,s);wings(0,0,T,1,z?'#fbe4ff':0);blit(B,0,0);X.restore()}
 // ---------- enemies ----------
 function waspArt(){poly([-20,-3,-31,0,-20,4],'#3b2a14');X.save();X.beginPath();X.ellipse(-2,1,19,14,0,0,TAU);X.fillStyle='#ff8a26';X.fill();X.clip();X.fillStyle='#2b2118';X.fillRect(-12,-16,6,34);X.fillRect(0,-16,6,34);X.restore();
   X.beginPath();X.ellipse(-2,1,19,14,0,0,TAU);strokeC(OUT,2);circ(-20,-6,11,'#ff8a26');X.beginPath();X.arc(-20,-6,11,0,TAU);strokeC(OUT,2);

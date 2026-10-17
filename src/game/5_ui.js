@@ -86,11 +86,16 @@ function drawPause(){UI=[];X.fillStyle='rgba(30,20,60,0.5)';X.fillRect(0,0,W,H);
 function lockIcon(x,y){X.beginPath();X.arc(x,y-5,7,Math.PI,TAU);strokeC('#fff',3);rrect(x-9,y-5,18,15,3);X.fillStyle='#fff';X.fill();circ(x,y+2,2,'#9e9e9e')}
 function drawTitle(){UI=[];lv=selLv;L=LEVELS[lv];drawBackdrop(selLv);X.fillStyle='rgba(255,255,255,0.18)';X.fillRect(0,0,W,H);
   const ly=TOP+66;X.save();X.translate(W/2,ly);X.rotate(-0.04+Math.sin(T*1.4)*0.015);txt('THE',0,-30,24,'#fff',{st:'#5d3a00',sw:6});txt('BEE GAME',0,12,Math.min(64,W*0.16),'#ffd23f',{st:'#5d3a00',sw:10});X.restore();
-  txt('starring ALEXANDER BUZZSON',W/2,ly+60,17,'#fff',{st:'#5d3a00',sw:5});
-  const by=lerp(ly+150,H*0.36,0.5)+Math.sin(T*2.4)*8;drawBee(W/2,by,{s:Math.min(2.4,H/300),rot:Math.sin(T*1.7)*0.08});
-  for(let i=0;i<5;i++){const a=T*1.2+i*TAU/5;blit(spr('honey',28,30,honeyArt),W/2+Math.cos(a)*120,by+Math.sin(a)*34)}
+  txt('starring '+(HERO==='zoe'?'ZOE':'ALEXANDER')+' BUZZSON',W/2,ly+60,17,'#fff',{st:'#5d3a00',sw:5});
+  // character picker: two big tappable portraits, name spoken on tap, choice saved
+  const by=ly+118,pg=Math.min(90,W*0.23);
+  for(const [who,dx,nm,col] of [['alex',-pg,'ALEX','#e53935'],['zoe',pg,'ZOE','#ff4f9a']]){const on=HERO===who,cx=W/2+dx,r=on?48:40,bob=on?Math.sin(T*2.4)*6:0;
+    circ(cx,by,r+5,on?'#fff':'rgba(255,255,255,0.55)');circ(cx,by,r,on?(who==='zoe'?'#ffd6ea':'#fff3c4'):'rgba(255,255,255,0.75)');if(on&&who==='zoe')for(let i=0;i<3;i++){const a=T*1.5+i*2.1;circ(cx+Math.cos(a)*(r-7),by+Math.sin(a)*(r-7),3.5,'#ff8fc8')}
+    drawBee(cx-4,by+6+bob,{s:on?1.2:0.95,rot:on?Math.sin(T*1.7)*0.08:0,who});
+    txt(nm,cx,by+r+15,on?20:17,on?col:'#fff',{st:on?'#fff':'#5d3a00',sw:5});
+    btn('hero_'+who,cx-r-8,by-r-8,2*r+16,2*r+40,()=>{if(HERO!==who){setHero(who);AUD.SFX.boing()}say(who==='zoe'?'pick_z':'pick_a',3)})}
   // level select (unlocked levels saved in localStorage)
-  const sy=H*0.58,gap=Math.min(70,(W-40)/5),x0=W/2-gap*2;txt('PICK A LEVEL',W/2,sy-46,16,'#fff',{st:'#5d3a00',sw:5});
+  const sy=Math.max(H*0.58,ly+234),gap=Math.min(70,(W-40)/5),x0=W/2-gap*2;txt('PICK A LEVEL',W/2,sy-46,16,'#fff',{st:'#5d3a00',sw:5});
   for(let i=0;i<5;i++){const x=x0+i*gap,ok=i<unlockLv,sel=i===selLv,r=sel?29:25;circ(x,sy,r+4,sel?'#fff':'rgba(255,255,255,0.6)');circ(x,sy,r,ok?['#ff8a26','#43a047','#7e57c2','#29b6f6','#8d6e63'][i]:'#9e9e9e');
     if(ok)txt(String(i+1),x,sy+2,26,'#fff',{st:'rgba(0,0,0,0.3)',sw:4});else lockIcon(x,sy);
     btn('lv'+(i+1),x-gap/2,sy-34,gap,68,()=>{if(ok){selLv=i;AUD.SFX.boing()}else AUD.SFX.zap()})}
@@ -102,7 +107,7 @@ function drawTitle(){UI=[];lv=selLv;L=LEVELS[lv];drawBackdrop(selLv);X.fillStyle
 // ---------- victory ----------
 function drawHive(x,y,s){X.save();X.translate(x,y);X.scale(s,s);X.fillStyle='#6d4c41';X.fillRect(-4,-90,8,20);for(let i=0;i<5;i++){const w=50-Math.abs(i-2)*10;ell(0,-62+i*22,w,13,i%2?'#ffb300':'#ffc94a')}ell(0,-10,12,10,'#5d3a00');X.restore()}
 function drawWin(){UI=[];lv=4;L=LEVELS[4];drawBackdrop(4);X.fillStyle='rgba(255,240,200,0.25)';X.fillRect(0,0,W,H);
-  const y0=TOP+40;txt('ALEXANDER',W/2,y0+10,Math.min(44,W*0.11),'#ffd23f',{st:'#5d3a00',sw:8});txt('BUZZSON',W/2,y0+54,Math.min(44,W*0.11),'#ffd23f',{st:'#5d3a00',sw:8});
+  const y0=TOP+40;txt(HERO==='zoe'?'ZOE':'ALEXANDER',W/2,y0+10,Math.min(44,W*0.11),'#ffd23f',{st:'#5d3a00',sw:8});txt('BUZZSON',W/2,y0+54,Math.min(44,W*0.11),'#ffd23f',{st:'#5d3a00',sw:8});
   txt('SAVED THE HIVE!',W/2,y0+100,Math.min(32,W*0.08),'#fff',{st:'#e65100',sw:7});
   const sy=Math.min(y0+330,H*0.52),bs=Math.min(0.78,H/1050);X.save();X.translate(W*0.68,sy);X.scale(bs,bs);X.translate(-W*0.68,-GY());BOSS.bear.draw({x:W*0.68,jy:0,paw:0,down:1,flash:0,sub:'idle'});X.restore();
   drawHive(W*0.2,sy-34,1);drawBee(W*0.36,sy-120+Math.sin(T*3)*10,{s:1.4,rot:Math.sin(T*2)*0.1});
