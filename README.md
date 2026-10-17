@@ -13,3 +13,6 @@ A cheerful side-scrolling flyer made for Alex (6, almost 7). Fly Alexander Buzzs
 - Title screen level select (unlocked levels saved in localStorage), best score, iOS safe-area / standalone aware, adaptive resolution for older iPhones.
 
 Dev: `src/gen.sh` (Piper TTS → `/tmp/tbg`), `python3 src/build.py` (inlines clips, font, JS into one `index.html`), `python3 src/icon.py` (icons), `python3 src/test.py` (iPhone SE + iPhone 13 checks & screenshots), `python3 src/fullrun.py` (bot plays all 5 levels + bosses; `KID=1` for a sloppier "kid bot"), `python3 src/perf.py` (frame-time checks, CPU throttled 4x).
+
+## Zoe Buzzson (v1.1)
+Pick **Alex** or **Zoe Buzzson** (a pink bow, lashes, rosy cheeks and purple stripes) on the start screen. Tapping a portrait says the name out loud and the choice is remembered. Gameplay is the same for both.
