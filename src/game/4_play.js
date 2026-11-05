@@ -2,14 +2,14 @@
 let state='title',T=0,stT=0,TS=1,paused=false,scroll=0;
 let lv=0,L=LEVELS[0],dist=0,LEN=1,phase='run',events=[],evI=0,cp={dist:0},spd=100,waitT=0;
 let bee={x:80,y:300,ty:300,vy:0,inv:0,tilt:0},objs=[],shots=[],bul=[],warns=[],parts=[],floats=[],boss=null,banner=null;
-const MAXH=5,STARTH=4;
-let hearts=STARTH,score=0,honey=0,pops=0,hitsTaken=0,runTime=0,lvHits=0,lvStart=0,triple=0,shield=0,shotT=0,shake=0,lastPraise=-9,powT=0,powN=0,levelsDone=[],oopsN=0,lastOuch=-9,endStats=null;
+const MAXH=5;function STARTH(){return diff?3:4}
+let hearts=STARTH(),score=0,honey=0,pops=0,hitsTaken=0,runTime=0,lvHits=0,lvStart=0,triple=0,shield=0,shotT=0,shake=0,lastPraise=-9,powT=0,powN=0,levelsDone=[],oopsN=0,lastOuch=-9,endStats=null;
 const say=(k,p)=>AUD.say(k,p);
 function playH(){return YMAX()-YMIN()}
 // ---------- level flow ----------
 function newGame(i){score=0;honey=0;pops=0;hitsTaken=0;runTime=0;levelsDone=[];oopsN=0;startLevel(i||0)}
 function startLevel(i){lv=i;L=LEVELS[i];LEN=L.speed*L.len;dist=0;phase='run';cp={dist:0};objs=[];shots=[];bul=[];warns=[];parts=[];floats=[];boss=null;banner=null;
-  hearts=Math.max(hearts,STARTH);if(i===0)hearts=STARTH;triple=0;shield=0;lvHits=0;lvStart=runTime;genEvents();evI=0;
+  hearts=Math.max(hearts,STARTH());if(i===0)hearts=STARTH();triple=0;shield=0;lvHits=0;lvStart=runTime;genEvents();evI=0;
   bee.x=BX();bee.y=bee.ty=(YMIN()+YMAX())/2;bee.inv=0;state='card';stT=0;
   if(unlockLv<i+1){unlockLv=i+1;LS.set('unlock',unlockLv)}selLv=i;AUD.setTheme(L.theme);setTimeout(()=>say('l'+(i+1),3),350)}
 function startPlay(){if(state!=='card')return;state='play';stT=0;if(lv===0&&R()<0.6)say('go',1)}
@@ -160,12 +160,12 @@ function bossUpdate(dt){const b=boss,def=BOSS[b.k];b.t+=dt;b.flash-=dt;
   // power-ups during the fight
   powT-=dt;if(powT<0){powT=12;powN++;const p=powN%2?'triple':(hearts<3?'heart':'shield');objs.push({k:'pow',p,x:W+40,y:YMIN()+playH()*rr(0.2,0.8),ph:0})}}
 function levelClear(){if(state==='clear'||state==='win')return;boss=null;levelsDone[lv]=1;if(unlockLv<Math.min(5,lv+2)){unlockLv=Math.min(5,lv+2);LS.set('unlock',unlockLv)}
-  if(score>best){best=score;LS.set('best',best)}
+  if(score>best){best=score;LS.set('best'+diff,best)}
   if(lv===4){finish();return}state='clear';stT=0;AUD.SFX.fanfare();AUD.setTheme('win');setTimeout(()=>say('clear',2),300)}
 function finish(){state='win';stT=0;boss=null;objs=[];bul=[];warns=[];AUD.setTheme('win');AUD.SFX.fanfare();AUD.SFX.cheer();setTimeout(()=>say('saved',3),500);confetti(120);
-  if(score>best){best=score;LS.set('best',best)}unlockLv=5;LS.set('unlock',5);
+  if(score>best){best=score;LS.set('best'+diff,best)}unlockLv=5;LS.set('unlock',5);
   const stars=hitsTaken<=6?3:hitsTaken<=14?2:1;const sec=Math.round(runTime);endStats={stars,honey,pops,score,time:Math.floor(sec/60)+':'+String(sec%60).padStart(2,'0'),hits:hitsTaken}}
-function respawn(){hearts=STARTH;bee.inv=2.6;objs=objs.filter(o=>o.k==='honey'||o.k==='jar');bul=[];warns=[];shots=[];state='play';stT=0;
+function respawn(){hearts=STARTH();bee.inv=2.6;objs=objs.filter(o=>o.k==='honey'||o.k==='jar');bul=[];warns=[];shots=[];state='play';stT=0;
   if(cp.boss&&boss){const def=BOSS[boss.k];boss.sub='idle';boss.st2=0;boss.paw=0;if(boss.k==='gulls')for(const g of boss.g)if(g.hp>0){g.st='ret';g.t=0;g.x=W+80}}
   else{dist=cp.dist;evI=events.findIndex(e=>e.at>dist);if(evI<0)evI=events.length;phase='run';boss=null;objs=[]}
   bee.y=bee.ty=(YMIN()+YMAX())/2;banner={s:'GO, BUZZSON!',t:0}}
@@ -174,7 +174,7 @@ function update(dt){T+=dt;stT+=dt;shake=Math.max(0,shake-dt*30);
   if(state==='title'){scroll+=40*dt;return}
   if(state==='win'){scroll+=30*dt;if(R()<dt*1.5)confetti(8);updParts(dt);return}
   if(paused)return;
-  const playing=state==='play';spd=phase==='run'?L.speed:L.speed*0.45;scroll+=spd*dt;if(playing)runTime+=dt;
+  const playing=state==='play';spd=(phase==='run'?L.speed:L.speed*0.45)*(diff?1.22:1);scroll+=spd*dt;if(playing)runTime+=dt;
   if(state==='card'&&stT>2.8)startPlay();
   if(state==='oops'&&stT>2.6)respawn();
   if(state==='clear'&&stT>4.2)startLevel(lv+1);

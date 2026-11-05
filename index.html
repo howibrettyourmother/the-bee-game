@@ -30,6 +30,7 @@ AG.hide=hide;AG.show=show})();</script>
 
 
 
+
 <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover"><meta name="app-version" content="1.1.0">
 <meta name="apple-mobile-web-app-capable" content="yes"><meta name="mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-status-bar-style" content="black-translucent"><meta name="apple-mobile-web-app-title" content="Bee Game"><meta name="application-name" content="Bee Game"><meta name="theme-color" content="#ffc21a">
 <title>The Bee Game — starring Alexander Buzzson</title>
@@ -211,7 +212,7 @@ const BX=()=>Math.min(W*0.22,150)+INL;          // bee x
 const LS={get:(k,d)=>{try{const v=localStorage.getItem('tbg_'+k);return v==null?d:v}catch(e){return d}},set:(k,v)=>{try{localStorage.setItem('tbg_'+k,v)}catch(e){}}};
 let HERO=(()=>{try{const q=new URLSearchParams(location.search).get('kid');if(q==='zoe'||q==='alex'){LS.set('hero',q);return q}}catch(e){}return LS.get('hero','alex')==='zoe'?'zoe':'alex'})();window.HERO_Z=HERO==='zoe';
 function setHero(h){HERO=h;window.HERO_Z=h==='zoe';LS.set('hero',h)}
-let unlockLv=clamp(+LS.get('unlock',1)||1,1,5),best=+LS.get('best',0)||0,autoFire=LS.get('auto','1')!=='0',selLv=unlockLv-1;
+let unlockLv=clamp(+LS.get('unlock',1)||1,1,5),diff=+(LS.get('diff','0')||0),best=+LS.get('best'+diff,0)||0,autoFire=LS.get('auto','1')!=='0',selLv=unlockLv-1;
 // ---------- drawing helpers ----------
 function txt(s,x,y,size,fill,o){o=o||{};X.font=(o.wt||'800 ')+size+'px '+FONT;X.textAlign=o.a||'center';X.textBaseline='middle';
   if(o.st){X.lineJoin='round';X.lineWidth=o.sw||size*0.22;X.strokeStyle=o.st;X.strokeText(s,x,y)}X.fillStyle=fill;X.fillText(s,x,y)}
@@ -471,14 +472,14 @@ function stingArt(){poly([-11,-2.6,11,0,-11,2.6],'#3b2a14');circ(-11,0,3,'#ffd23
 let state='title',T=0,stT=0,TS=1,paused=false,scroll=0;
 let lv=0,L=LEVELS[0],dist=0,LEN=1,phase='run',events=[],evI=0,cp={dist:0},spd=100,waitT=0;
 let bee={x:80,y:300,ty:300,vy:0,inv:0,tilt:0},objs=[],shots=[],bul=[],warns=[],parts=[],floats=[],boss=null,banner=null;
-const MAXH=5,STARTH=4;
-let hearts=STARTH,score=0,honey=0,pops=0,hitsTaken=0,runTime=0,lvHits=0,lvStart=0,triple=0,shield=0,shotT=0,shake=0,lastPraise=-9,powT=0,powN=0,levelsDone=[],oopsN=0,lastOuch=-9,endStats=null;
+const MAXH=5;function STARTH(){return diff?3:4}
+let hearts=STARTH(),score=0,honey=0,pops=0,hitsTaken=0,runTime=0,lvHits=0,lvStart=0,triple=0,shield=0,shotT=0,shake=0,lastPraise=-9,powT=0,powN=0,levelsDone=[],oopsN=0,lastOuch=-9,endStats=null;
 const say=(k,p)=>AUD.say(k,p);
 function playH(){return YMAX()-YMIN()}
 // ---------- level flow ----------
 function newGame(i){score=0;honey=0;pops=0;hitsTaken=0;runTime=0;levelsDone=[];oopsN=0;startLevel(i||0)}
 function startLevel(i){lv=i;L=LEVELS[i];LEN=L.speed*L.len;dist=0;phase='run';cp={dist:0};objs=[];shots=[];bul=[];warns=[];parts=[];floats=[];boss=null;banner=null;
-  hearts=Math.max(hearts,STARTH);if(i===0)hearts=STARTH;triple=0;shield=0;lvHits=0;lvStart=runTime;genEvents();evI=0;
+  hearts=Math.max(hearts,STARTH());if(i===0)hearts=STARTH();triple=0;shield=0;lvHits=0;lvStart=runTime;genEvents();evI=0;
   bee.x=BX();bee.y=bee.ty=(YMIN()+YMAX())/2;bee.inv=0;state='card';stT=0;
   if(unlockLv<i+1){unlockLv=i+1;LS.set('unlock',unlockLv)}selLv=i;AUD.setTheme(L.theme);setTimeout(()=>say('l'+(i+1),3),350)}
 function startPlay(){if(state!=='card')return;state='play';stT=0;if(lv===0&&R()<0.6)say('go',1)}
@@ -629,12 +630,12 @@ function bossUpdate(dt){const b=boss,def=BOSS[b.k];b.t+=dt;b.flash-=dt;
   // power-ups during the fight
   powT-=dt;if(powT<0){powT=12;powN++;const p=powN%2?'triple':(hearts<3?'heart':'shield');objs.push({k:'pow',p,x:W+40,y:YMIN()+playH()*rr(0.2,0.8),ph:0})}}
 function levelClear(){if(state==='clear'||state==='win')return;boss=null;levelsDone[lv]=1;if(unlockLv<Math.min(5,lv+2)){unlockLv=Math.min(5,lv+2);LS.set('unlock',unlockLv)}
-  if(score>best){best=score;LS.set('best',best)}
+  if(score>best){best=score;LS.set('best'+diff,best)}
   if(lv===4){finish();return}state='clear';stT=0;AUD.SFX.fanfare();AUD.setTheme('win');setTimeout(()=>say('clear',2),300)}
 function finish(){state='win';stT=0;boss=null;objs=[];bul=[];warns=[];AUD.setTheme('win');AUD.SFX.fanfare();AUD.SFX.cheer();setTimeout(()=>say('saved',3),500);confetti(120);
-  if(score>best){best=score;LS.set('best',best)}unlockLv=5;LS.set('unlock',5);
+  if(score>best){best=score;LS.set('best'+diff,best)}unlockLv=5;LS.set('unlock',5);
   const stars=hitsTaken<=6?3:hitsTaken<=14?2:1;const sec=Math.round(runTime);endStats={stars,honey,pops,score,time:Math.floor(sec/60)+':'+String(sec%60).padStart(2,'0'),hits:hitsTaken}}
-function respawn(){hearts=STARTH;bee.inv=2.6;objs=objs.filter(o=>o.k==='honey'||o.k==='jar');bul=[];warns=[];shots=[];state='play';stT=0;
+function respawn(){hearts=STARTH();bee.inv=2.6;objs=objs.filter(o=>o.k==='honey'||o.k==='jar');bul=[];warns=[];shots=[];state='play';stT=0;
   if(cp.boss&&boss){const def=BOSS[boss.k];boss.sub='idle';boss.st2=0;boss.paw=0;if(boss.k==='gulls')for(const g of boss.g)if(g.hp>0){g.st='ret';g.t=0;g.x=W+80}}
   else{dist=cp.dist;evI=events.findIndex(e=>e.at>dist);if(evI<0)evI=events.length;phase='run';boss=null;objs=[]}
   bee.y=bee.ty=(YMIN()+YMAX())/2;banner={s:'GO, BUZZSON!',t:0}}
@@ -643,7 +644,7 @@ function update(dt){T+=dt;stT+=dt;shake=Math.max(0,shake-dt*30);
   if(state==='title'){scroll+=40*dt;return}
   if(state==='win'){scroll+=30*dt;if(R()<dt*1.5)confetti(8);updParts(dt);return}
   if(paused)return;
-  const playing=state==='play';spd=phase==='run'?L.speed:L.speed*0.45;scroll+=spd*dt;if(playing)runTime+=dt;
+  const playing=state==='play';spd=(phase==='run'?L.speed:L.speed*0.45)*(diff?1.22:1);scroll+=spd*dt;if(playing)runTime+=dt;
   if(state==='card'&&stT>2.8)startPlay();
   if(state==='oops'&&stT>2.6)respawn();
   if(state==='clear'&&stT>4.2)startLevel(lv+1);
@@ -766,7 +767,7 @@ function bigBtn(id,x,y,w,h,label,c,fn,size){rrect(x,y,w,h,h/2);X.fillStyle=c;X.f
 function wrapTxt(s,x,y,size,fill,maxW,o){X.font='800 '+size+'px '+FONT;const words=s.split(' ');let line='',lines=[];for(const w of words){const t=line?line+' '+w:w;if(X.measureText(t).width>maxW&&line){lines.push(line);line=w}else line=t}lines.push(line);
   lines.forEach((l,i)=>txt(l,x,y+i*size*1.1,size,fill,o));return lines.length}
 function drawCard(){const k=back(stT*2.2),y=Math.max(TOP+110,H*0.28);X.save();X.translate(W/2,y+110);X.scale(k,k);X.translate(-W/2,-(y+110));
-  const x=panel(Math.min(340,W-30),220,y);txt('LEVEL '+(lv+1),W/2,y+38,30,'#ff8a26',{st:'#fff',sw:6});wrapTxt(L.n,W/2,y+82,28,'#5d3a00',Math.min(310,W-50));
+  const x=panel(Math.min(340,W-30),220,y);txt('LEVEL '+(lv+1)+(diff?' · HARD':''),W/2,y+38,30,'#ff8a26',{st:'#fff',sw:6});wrapTxt(L.n,W/2,y+82,28,'#5d3a00',Math.min(310,W-50));
   txt(L.sub,W/2,y+150,16,'#8d6e63');txt('Tap to fly!',W/2,y+190,18,'#43a047');X.restore()}
 function drawBanner(){const b=banner;const k=back(b.t*3),out=b.t>2.2?ease((b.t-2.2)*3):0;X.save();X.globalAlpha=1-out;X.translate(W/2,H*0.36);X.scale(k,k);
   if(b.boss){rrect(-170,-52,340,104,26);X.fillStyle='rgba(255,255,255,0.94)';X.fill();X.lineWidth=6;X.strokeStyle='#e53935';X.stroke();txt('BOSS!',0,-22,22,'#e53935');txt(b.s,0,16,b.s.length>14?24:30,'#5d3a00')}
@@ -802,6 +803,7 @@ function drawTitle(){UI=[];lv=selLv;L=LEVELS[lv];drawBackdrop(selLv);X.fillStyle
   wrapTxt(LEVELS[selLv].n,W/2,sy+48,19,'#fff',W-30,{st:'#5d3a00',sw:5});
   const py=Math.min(H-BOT-150,sy+80),pulse=1+Math.sin(T*5)*0.04;X.save();X.translate(W/2,py+38);X.scale(pulse,pulse);X.translate(-W/2,-(py+38));bigBtn('play',W/2-110,py,220,76,'PLAY ▶','#43a047',()=>newGame(selLv),38);X.restore();
   const bb=H-BOT-46;bigBtn('auto',14+INL,bb-24,170,48,'AUTO-FIRE: '+(autoFire?'ON':'OFF'),autoFire?'#ff8a26':'#9e9e9e',()=>setAuto(!autoFire),16);
+  bigBtn('diff',14+INL+180,bb-24,140,48,diff?'HARD':'NORMAL',diff?'#e53935':'#81c784',()=>{diff=1-diff;LS.set('diff',String(diff));best=+LS.get('best'+diff,0)||0;AUD.SFX.boing()},18);
   const mx=W-INR-40;circ(mx,bb,24,'#ffd23f');poly([mx-10,bb-5,mx-4,bb-5,mx+3,bb-12,mx+3,bb+12,mx-4,bb+5,mx-10,bb+5],'#5d3a00');if(AUD.muted){X.beginPath();X.moveTo(mx-14,bb-14);X.lineTo(mx+14,bb+14);strokeC('#c62828',4)}btn('mute',mx-28,bb-28,56,56,()=>AUD.setMuted(!AUD.muted));
   if(best)txt('BEST '+best,W-INR-100,bb,16,'#fff',{st:'#5d3a00',sw:4,a:'right'})}
 // ---------- victory ----------

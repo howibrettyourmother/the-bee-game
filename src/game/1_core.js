@@ -28,7 +28,7 @@ const BX=()=>Math.min(W*0.22,150)+INL;          // bee x
 const LS={get:(k,d)=>{try{const v=localStorage.getItem('tbg_'+k);return v==null?d:v}catch(e){return d}},set:(k,v)=>{try{localStorage.setItem('tbg_'+k,v)}catch(e){}}};
 let HERO=(()=>{try{const q=new URLSearchParams(location.search).get('kid');if(q==='zoe'||q==='alex'){LS.set('hero',q);return q}}catch(e){}return LS.get('hero','alex')==='zoe'?'zoe':'alex'})();window.HERO_Z=HERO==='zoe';
 function setHero(h){HERO=h;window.HERO_Z=h==='zoe';LS.set('hero',h)}
-let unlockLv=clamp(+LS.get('unlock',1)||1,1,5),best=+LS.get('best',0)||0,autoFire=LS.get('auto','1')!=='0',selLv=unlockLv-1;
+let unlockLv=clamp(+LS.get('unlock',1)||1,1,5),diff=+(LS.get('diff','0')||0),best=+LS.get('best'+diff,0)||0,autoFire=LS.get('auto','1')!=='0',selLv=unlockLv-1;
 // ---------- drawing helpers ----------
 function txt(s,x,y,size,fill,o){o=o||{};X.font=(o.wt||'800 ')+size+'px '+FONT;X.textAlign=o.a||'center';X.textBaseline='middle';
   if(o.st){X.lineJoin='round';X.lineWidth=o.sw||size*0.22;X.strokeStyle=o.st;X.strokeText(s,x,y)}X.fillStyle=fill;X.fillText(s,x,y)}
