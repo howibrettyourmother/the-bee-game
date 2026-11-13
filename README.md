@@ -16,3 +16,6 @@ Dev: `src/gen.sh` (Piper TTS → `/tmp/tbg`), `python3 src/build.py` (inlines cl
 
 ## Zoe Buzzson (v1.1)
 Pick **Alex** or **Zoe Buzzson** (a pink bow, lashes, rosy cheeks and purple stripes) on the start screen. Tapping a portrait says the name out loud and the choice is remembered. Gameplay is the same for both.
+
+## Per-kid saves + Little Bee (v1.3, Nov 2026)
+Saves are now per kid (`tbg_alex_*`, `tbg_zoe_*`), following `?kid=` from the hubs or the hero picked on the title screen. The old per-device saves were copied to Alex once. Zoe starts in **Little Bee** mode (6 hearts, up to 7, slower scroll, longer blink after a bump, more heart drops, auto-fire on). The difficulty button cycles Little Bee → Normal → Hard.

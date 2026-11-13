@@ -25,10 +25,17 @@ const YMIN=()=>TOP+86;                          // below the HUD (which sits bel
 const YMAX=()=>GY()-18;
 const BX=()=>Math.min(W*0.22,150)+INL;          // bee x
 // ---------- persistence ----------
-const LS={get:(k,d)=>{try{const v=localStorage.getItem('tbg_'+k);return v==null?d:v}catch(e){return d}},set:(k,v)=>{try{localStorage.setItem('tbg_'+k,v)}catch(e){}}};
-let HERO=(()=>{try{const q=new URLSearchParams(location.search).get('kid');if(q==='zoe'||q==='alex'){LS.set('hero',q);return q}}catch(e){}return LS.get('hero','alex')==='zoe'?'zoe':'alex'})();window.HERO_Z=HERO==='zoe';
-function setHero(h){HERO=h;window.HERO_Z=h==='zoe';LS.set('hero',h)}
-let unlockLv=clamp(+LS.get('unlock',1)||1,1,5),diff=+(LS.get('diff','0')||0),best=+LS.get('best'+diff,0)||0,autoFire=LS.get('auto','1')!=='0',selLv=unlockLv-1;
+const LS0={get:(k,d)=>{try{const v=localStorage.getItem('tbg_'+k);return v==null?d:v}catch(e){return d}},set:(k,v)=>{try{localStorage.setItem('tbg_'+k,v)}catch(e){}}};
+let HERO=(()=>{try{const q=new URLSearchParams(location.search).get('kid');if(q==='zoe'||q==='alex'){LS0.set('hero',q);return q}}catch(e){}return LS0.get('hero','alex')==='zoe'?'zoe':'alex'})();window.HERO_Z=HERO==='zoe';
+// per-kid saves: tbg_<kid>_<key>. One-time migration copies the old per-device saves to Alex (they were his).
+(function(){try{if(localStorage.getItem('tbg_mig_kid'))return;['unlock','diff','best0','best1','auto'].forEach(k=>{const v=localStorage.getItem('tbg_'+k);if(v!=null&&localStorage.getItem('tbg_alex_'+k)==null)localStorage.setItem('tbg_alex_'+k,v)});localStorage.setItem('tbg_mig_kid','1')}catch(e){}})();
+const LS={get:(k,d)=>LS0.get(HERO+'_'+k,d),set:(k,v)=>LS0.set(HERO+'_'+k,v)};
+// diff: 0 Normal, 1 Hard, 2 Little Bee (easy: lots of hearts, slower, auto-fire). Zoe starts in Little Bee.
+const DIFFN=['NORMAL','HARD','LITTLE BEE'],DIFFC=['#81c784','#e53935','#f48fb1'];
+let unlockLv,diff,best,autoFire,selLv;
+function loadKid(){unlockLv=clamp(+LS.get('unlock',1)||1,1,5);diff=+(LS.get('diff',HERO==='zoe'?'2':'0'))||0;if(diff<0||diff>2)diff=0;best=+LS.get('best'+diff,0)||0;autoFire=LS.get('auto','1')!=='0';selLv=unlockLv-1}
+loadKid();
+function setHero(h){HERO=h;window.HERO_Z=h==='zoe';LS0.set('hero',h);loadKid();if(typeof applyDiff==='function')applyDiff()}
 // ---------- drawing helpers ----------
 function txt(s,x,y,size,fill,o){o=o||{};X.font=(o.wt||'800 ')+size+'px '+FONT;X.textAlign=o.a||'center';X.textBaseline='middle';
   if(o.st){X.lineJoin='round';X.lineWidth=o.sw||size*0.22;X.strokeStyle=o.st;X.strokeText(s,x,y)}X.fillStyle=fill;X.fillText(s,x,y)}

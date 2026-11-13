@@ -2,7 +2,7 @@
 let state='title',T=0,stT=0,TS=1,paused=false,scroll=0;
 let lv=0,L=LEVELS[0],dist=0,LEN=1,phase='run',events=[],evI=0,cp={dist:0},spd=100,waitT=0;
 let bee={x:80,y:300,ty:300,vy:0,inv:0,tilt:0},objs=[],shots=[],bul=[],warns=[],parts=[],floats=[],boss=null,banner=null;
-const MAXH=5;function STARTH(){return diff?3:4}
+let MAXH=5;function applyDiff(){MAXH=diff===2?7:5}applyDiff();function STARTH(){return diff===2?6:diff===1?3:4}
 let hearts=STARTH(),score=0,honey=0,pops=0,hitsTaken=0,runTime=0,lvHits=0,lvStart=0,triple=0,shield=0,shotT=0,shake=0,lastPraise=-9,powT=0,powN=0,levelsDone=[],oopsN=0,lastOuch=-9,endStats=null;
 const say=(k,p)=>AUD.say(k,p);
 function playH(){return YMAX()-YMIN()}
@@ -40,7 +40,7 @@ function confetti(n){for(let i=0;i<n&&parts.length<170;i++)parts.push({x:rr(0,W)
 // ---------- damage & pickups ----------
 function hurt(){if(bee.inv>0||state!=='play')return;
   if(shield){shield=0;bee.inv=1.4;AUD.SFX.shieldPop();burst(bee.x,bee.y,16,['#ff80ab','#fff','#ffd23f'],220);return}
-  hearts--;hitsTaken++;lvHits++;bee.inv=2.2;shake=9;AUD.SFX.hurt();burst(bee.x,bee.y,12,['#ffd23f','#fff'],180);
+  hearts--;hitsTaken++;lvHits++;bee.inv=diff===2?3:2.2;shake=9;AUD.SFX.hurt();burst(bee.x,bee.y,12,['#ffd23f','#fff'],180);
   if(hearts<=0){state='oops';stT=0;oopsN++;bul=[];warns=[];say('oops',3)}else if(T-lastOuch>9){lastOuch=T;say('ouch',1)}}
 function praise(){if(T-lastPraise<7)return;lastPraise=T;say(pick(['g1','g2','g3','g4','g5']),1)}
 function collect(o){if(o.k==='honey'){score+=10;honey++;AUD.SFX.honey(false);burst(o.x,o.y,5,['#ffb300','#ffe082'],90,4);if(honey%25===0)say('honey',1)}
@@ -158,7 +158,7 @@ function bossUpdate(dt){const b=boss,def=BOSS[b.k];b.t+=dt;b.flash-=dt;
   // boss contact
   if(def.hurtOn(b))for(const r of def.rects(b))if(circRect(bee.x,bee.y,BEE_R,r[0],r[1],r[2],r[3])){hurt();break}
   // power-ups during the fight
-  powT-=dt;if(powT<0){powT=12;powN++;const p=powN%2?'triple':(hearts<3?'heart':'shield');objs.push({k:'pow',p,x:W+40,y:YMIN()+playH()*rr(0.2,0.8),ph:0})}}
+  powT-=dt;if(powT<0){powT=12;powN++;const p=powN%2?'triple':(hearts<(diff===2?5:3)?'heart':'shield');objs.push({k:'pow',p,x:W+40,y:YMIN()+playH()*rr(0.2,0.8),ph:0})}}
 function levelClear(){if(state==='clear'||state==='win')return;boss=null;levelsDone[lv]=1;if(unlockLv<Math.min(5,lv+2)){unlockLv=Math.min(5,lv+2);LS.set('unlock',unlockLv)}
   if(score>best){best=score;LS.set('best'+diff,best)}
   if(lv===4){finish();return}state='clear';stT=0;AUD.SFX.fanfare();AUD.setTheme('win');setTimeout(()=>say('clear',2),300)}
@@ -174,7 +174,7 @@ function update(dt){T+=dt;stT+=dt;shake=Math.max(0,shake-dt*30);
   if(state==='title'){scroll+=40*dt;return}
   if(state==='win'){scroll+=30*dt;if(R()<dt*1.5)confetti(8);updParts(dt);return}
   if(paused)return;
-  const playing=state==='play';spd=(phase==='run'?L.speed:L.speed*0.45)*(diff?1.22:1);scroll+=spd*dt;if(playing)runTime+=dt;
+  const playing=state==='play';spd=(phase==='run'?L.speed:L.speed*0.45)*(diff===1?1.22:diff===2?0.85:1);scroll+=spd*dt;if(playing)runTime+=dt;
   if(state==='card'&&stT>2.8)startPlay();
   if(state==='oops'&&stT>2.6)respawn();
   if(state==='clear'&&stT>4.2)startLevel(lv+1);
