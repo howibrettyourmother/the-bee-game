@@ -167,8 +167,9 @@ function add(){document.body.appendChild(b);document.body.appendChild(hint);watc
   if(typeof _say==='function'){
     AUD.say=function(k,p,q){
       try{
-        if(window.KVX&&(k==='great'||k==='gj'||k==='yay'||k==='yes'||k==='awesome'||k==='legend')){KVX.praise();return true;}
-        if(window.KVX&&(k==='try'||k==='hint'||k==='oops')){KVX.praise('try');return true;}
+        var hasClip=typeof CLIPS!=='undefined'&&CLIPS[k];
+        if(!hasClip&&window.KVX&&(k==='great'||k==='gj'||k==='yay'||k==='yes'||k==='awesome'||k==='legend')){KVX.praise();return true;}
+        if(!hasClip&&window.KVX&&(k==='try'||k==='hint'||k==='oops')){KVX.praise('try');return true;}
       }catch(e){}
       return _say.apply(AUD,arguments);
     };
